@@ -34,6 +34,7 @@ extern void qpnp_wled_dimming(int dst_lvl,int current_lvl);
 #endif
 
 #include "mdss_dsi.h"
+#include "mdss_livedisplay.h"
 
 #if defined(CONFIG_LGE_MIPI_H1_INCELL_QHD_CMD_PANEL)
 #if defined(CONFIG_LGE_DISPLAY_AOD_SUPPORTED)
@@ -249,13 +250,8 @@ void lge_force_mdss_dsi_panel_cmd_read(char cmd0, int cnt)
 #endif
 #endif
 
-#if defined(CONFIG_LGE_DISPLAY_AOD_SUPPORTED)
 void mdss_dsi_panel_cmds_send(struct mdss_dsi_ctrl_pdata *ctrl,
 			struct dsi_panel_cmds *pcmds, u32 flags)
-#else
-static void mdss_dsi_panel_cmds_send(struct mdss_dsi_ctrl_pdata *ctrl,
-			struct dsi_panel_cmds *pcmds, u32 flags)
-#endif
 {
 	struct dcs_cmd_req cmdreq;
 	struct mdss_panel_info *pinfo;
@@ -1193,6 +1189,8 @@ notify:
 	}
 #endif
 
+	mdss_livedisplay_update(ctrl, MODE_UPDATE_ALL);
+
 end:
 	pinfo->blank_state = MDSS_PANEL_BLANK_UNBLANK;
 	pr_debug("%s:-\n", __func__);
@@ -1334,13 +1332,8 @@ static void mdss_dsi_parse_trigger(struct device_node *np, char *trigger,
 	}
 }
 
-#if defined(CONFIG_LGE_DISPLAY_AOD_SUPPORTED)
 int mdss_dsi_parse_dcs_cmds(struct device_node *np,
 		struct dsi_panel_cmds *pcmds, char *cmd_key, char *link_key)
-#else
-static int mdss_dsi_parse_dcs_cmds(struct device_node *np,
-		struct dsi_panel_cmds *pcmds, char *cmd_key, char *link_key)
-#endif
 {
 	const char *data;
 	int blen = 0, len;
@@ -3174,6 +3167,8 @@ static int mdss_panel_parse_dt(struct device_node *np,
 	mdss_dsi_parse_panel_horizintal_line_idle(np, ctrl_pdata);
 
 	mdss_dsi_parse_dfps_config(np, ctrl_pdata);
+
+	mdss_livedisplay_parse_dt(np, pinfo);
 
 	return 0;
 

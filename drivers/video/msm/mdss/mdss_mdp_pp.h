@@ -157,6 +157,8 @@ struct mdss_pp_res_type {
 	 * struct.
 	 */
 	void *pp_data_res;
+	struct mdp_pcc_cfg_data raw_pcc_disp_cfg[MDSS_BLOCK_DISP_NUM];
+	struct mdp_pcc_cfg_data user_pcc_disp_cfg[MDSS_BLOCK_DISP_NUM];
 };
 
 #ifdef CONFIG_ARCH_MSM8996

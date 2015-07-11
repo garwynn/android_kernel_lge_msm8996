@@ -1446,5 +1446,6 @@ void mdss_mdp_wb_free(struct mdss_mdp_writeback *wb);
 void mdss_dsc_parameters_calc(struct dsc_desc *dsc, int width, int height);
 void mdss_mdp_ctl_dsc_setup(struct mdss_mdp_ctl *ctl,
 	struct mdss_panel_info *pinfo);
+int mdss_mdp_user_pcc_config(struct mdp_pcc_cfg_data *config);
 
 #endif /* MDSS_MDP_H */
