@@ -336,14 +336,8 @@ static void msm_restart_prepare(const char *cmd)
 		lge_set_restart_reason(LAF_DLOAD_MODE);
 	}
 
-	if (in_panic) {
-		extern int gen_key_panic;
-		if (gen_key_panic)
-			lge_set_restart_reason(LGE_RB_MAGIC | LGE_ERR_KERN | LGE_ERR_KEY);
-		else
-			lge_set_panic_reason();
-	}
-
+	if (in_panic)
+		lge_set_panic_reason();
 #endif
 
 	flush_cache_all();

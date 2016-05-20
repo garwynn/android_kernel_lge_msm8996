@@ -498,6 +498,12 @@ dhdpcie_bus_isr(dhd_bus_t *bus)
 			break;
 		}
 
+		if (bus->no_cfg_restore) {
+			DHD_ERROR(("%s: PCIe link is down, not processing the interrupt \n",
+				__FUNCTION__));
+			break;
+		}
+
 		intstatus = dhdpcie_bus_intstatus(bus);
 
 		/* Check if the interrupt is ours or not */
@@ -5570,6 +5576,13 @@ dhd_bus_flow_ring_delete_request(dhd_bus_t *bus, void *arg)
 
 	flow_ring_node = (flow_ring_node_t *)arg;
 
+#ifdef DHDTCPACK_SUPPRESS
+	/* Clean tcp_ack_info_tbl in order to prevent access to flushed pkt,
+	 * when there is a newly coming packet from network stack.
+	 */
+	dhd_tcpack_info_tbl_clean(bus->dhd);
+#endif /* DHDTCPACK_SUPPRESS */
+
 	DHD_FLOWRING_LOCK(flow_ring_node->lock, flags);
 	if (flow_ring_node->status == FLOW_RING_STATUS_DELETE_PENDING) {
 		DHD_FLOWRING_UNLOCK(flow_ring_node->lock, flags);
@@ -5580,12 +5593,6 @@ dhd_bus_flow_ring_delete_request(dhd_bus_t *bus, void *arg)
 
 	queue = &flow_ring_node->queue; /* queue associated with flow ring */
 
-#ifdef DHDTCPACK_SUPPRESS
-	/* Clean tcp_ack_info_tbl in order to prevent access to flushed pkt,
-	 * when there is a newly coming packet from network stack.
-	 */
-	dhd_tcpack_info_tbl_clean(bus->dhd);
-#endif /* DHDTCPACK_SUPPRESS */
 	/* Flush all pending packets in the queue, if any */
 	while ((pkt = dhd_flow_queue_dequeue(bus->dhd, queue)) != NULL) {
 		PKTFREE(bus->dhd->osh, pkt, TRUE);
@@ -5635,15 +5642,14 @@ int dhd_bus_flow_ring_flush_request(dhd_bus_t *bus, void *arg)
 	flow_ring_node = (flow_ring_node_t *)arg;
 	queue = &flow_ring_node->queue; /* queue associated with flow ring */
 
-	DHD_FLOWRING_LOCK(flow_ring_node->lock, flags);
-
-#ifdef DHDTCPACK_SUPPRESS
+	#ifdef DHDTCPACK_SUPPRESS
 	/* Clean tcp_ack_info_tbl in order to prevent access to flushed pkt,
 	 * when there is a newly coming packet from network stack.
 	 */
 	dhd_tcpack_info_tbl_clean(bus->dhd);
 #endif /* DHDTCPACK_SUPPRESS */
 
+	DHD_FLOWRING_LOCK(flow_ring_node->lock, flags);
 	/* Flush all pending packets in the queue, if any */
 	while ((pkt = dhd_flow_queue_dequeue(bus->dhd, queue)) != NULL) {
 		PKTFREE(bus->dhd->osh, pkt, TRUE);

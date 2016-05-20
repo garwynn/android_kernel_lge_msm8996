@@ -2328,8 +2328,8 @@
 		reg = <0x4a8000 0x2000>,
 			<0x74230 0x1000>;
 		reg-names = "tsens_physical", "tsens_eeprom_physical";
-		interrupts = <0 184 0>, <0 430 0>;
-		interrupt-names = "tsens-upper-lower", "tsens-critical";
+		interrupts = <0 184 0>, <0 430 0>, <0 182 0>;
+		interrupt-names = "tsens-upper-lower", "tsens-critical", "tsens-min-max";
 		qcom,sensors = <16>;
 		qcom,slope = <2901 2846 3200 3200 3200 3200 3200 3200 3200 3200 3200 3200 3200 3200 3200 3200>;
 	};
@@ -2466,7 +2466,6 @@
 			 <&clock_gcc clk_gcc_ce1_ahb_m_clk>,
 			 <&clock_gcc clk_gcc_ce1_axi_m_clk>;
 		qcom,ce-opp-freq = <171430000>;
-		qcom,qsee-reentrancy-support = <2>;
 	};
 
 	qcom,qbt1000 {

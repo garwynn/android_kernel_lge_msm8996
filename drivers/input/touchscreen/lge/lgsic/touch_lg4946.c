@@ -1566,7 +1566,6 @@ static int lg4946_probe(struct device *dev)
 	d->lcd_mode = LCD_MODE_U3;
 	d->tci_debug_type = 1;
 	lg4946_sic_abt_probe();
-	atomic_set(&ts->state.debug_option_mask, DEBUG_OPTION_2);
 
 	lg4946_asc_init(dev);	/* ASC */
 
@@ -2128,8 +2127,9 @@ int lg4946_debug_info(struct device *dev, int mode)
 	if (mode) {
 		u8 debug_data[264];
 
-		if ((debug_change_mask && press_mask) || (ts->tcount > 0)) {
-			TOUCH_I("int occured on wq running\n");
+		if (ts->tcount > 0) {
+			if (debug_change_mask && press_mask)
+				TOUCH_I("int occured on wq running\n");
 			return 1;
 
 		} else {
@@ -2140,7 +2140,8 @@ int lg4946_debug_info(struct device *dev, int mode)
 				memcpy(&d->info.debug, &debug_data[132], sizeof(d->info.debug));
 			}
 
-			if (debug->frame_cnt - d->frame_cnt > DEBUG_FRAME_CNT) {
+			if ((debug->frame_cnt - d->frame_cnt > DEBUG_FRAME_CNT) ||
+					(atomic_read(&ts->state.fb) == FB_SUSPEND)){
 				TOUCH_I("frame cnt over\n");
 				return -1;
 			}

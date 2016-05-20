@@ -261,6 +261,7 @@
 
 		qcom,gic-parent = <&intc>;
 		qcom,gic-map = <2 216>, /* tsens_upper_lower_int */
+			<0xff 214>, /* tsens1_max_min_int */
 			<52 212>,   /* qmp_usb3_lfps_rxterm_irq */
 			<87 358>,   /* ee0_krait_hlos_spmi_periph_irq */
 			<0xff 16>,  /* APCj_qgicdrCpu0HwFaultIrptReq */
@@ -433,6 +434,7 @@
 			<0xff 464>, /* ipa_bam_irq[0] */
 			<0xff 465>, /* ipa_bam_irq[2] */
 			<0xff 477>, /* tsens0_tsens_critical_int */
+			<0xff 478>, /* tsens0_tsens_min_max_int */
 			<0xff 480>, /* q6_wdog_expired_irq */
 			<0xff 481>, /* mss_ipc_out_irq(4) */
 			<0xff 483>, /* mss_ipc_out_irq(6) */

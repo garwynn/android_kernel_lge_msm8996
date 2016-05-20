@@ -1426,7 +1426,7 @@ static int media_not_present(struct scsi_disk *sdkp,
  *
  *	Note: this function is invoked from the block subsystem.
  **/
-unsigned int sd_check_events(struct gendisk *disk, unsigned int clearing)
+static unsigned int sd_check_events(struct gendisk *disk, unsigned int clearing)
 {
 	struct scsi_disk *sdkp = scsi_disk(disk);
 	struct scsi_device *sdp = sdkp->device;

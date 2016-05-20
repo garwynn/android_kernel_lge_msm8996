@@ -13,18 +13,24 @@
 
 /dts-v1/;
 
-#include "../../qcom/msm8996-v3.dtsi"
-#include "../../qcom/msm-pmi8996.dtsi"
+#include "../../qcom/msm8996-v2.dtsi"
 #include "msm8996-elsa_vzw.dtsi"
 #include "msm8996-elsa_vzw-touch.dtsi"
 #include "../msm8996-elsa-camera.dtsi"
 
 / {
-	model = "Qualcomm Technologies, Inc. MSM 8996 v3.x + PMI8996 MTP";
+	model = "Qualcomm Technologies, Inc. MSM 8996 v2 + PMI8994 MTP";
 	compatible = "qcom,msm8996-mtp", "qcom,msm8996", "qcom,mtp";
-	qcom,board-id = <0xC08 0>;
+	qcom,board-id = <0x508 0>;
 };
 
+&spmi_bus {
+	qcom,pmi8994@2 {
+		 bcl@4200 {
+			 status = "disabled";
+		 };
+	};
+};
 &i2c_12 {
 	status = "disabled";
 };
@@ -141,6 +147,14 @@
     lge,lge_otp_enable;
 };
 
+&pmi8994_fg {
+	lge,lge_rid_disable;
+};
+
+&sdhc_2 {
+    cd-gpios = <&tlmm 95 0x1>; /* 1: Active-Low, 0: Active-High */
+};
+
 /* set unused gpio to off */
 &pm8994_gpios {
 	gpio@c300 { /* PM GPIO 4 */
@@ -174,11 +188,6 @@
 	};
 
 	gpio@cb00 { /* PM GPIO 12 */
-		status = "okay";
-		qcom,master-en = <0x0>;
-	};
-
-	gpio@cc00 { /* PM GPIO 13 */
 		status = "okay";
 		qcom,master-en = <0x0>;
 	};
@@ -238,19 +247,5 @@
 	gpio@c900 { /* PMI GPIO 10 */
 		status = "okay";
 		qcom,master-en = <0x0>;
-	};
-};
-
-&rpm_bus {
-	rpm-regulator-ldoa18 {
-		status = "okay";
-		pm8994_l18: regulator-l18 {
-			regulator-min-microvolt = <2200000>;
-			regulator-max-microvolt = <2200000>;
-			qcom,init-voltage       = <2200000>;
-			qcom,vdd-voltage-level = <2200000 2200000>;
-			regulator-always-on;
-			status = "okay";
-		};
 	};
 };

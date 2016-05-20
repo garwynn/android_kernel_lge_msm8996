@@ -11,11 +11,10 @@
  */
 
 #include "../msm8996-fingerprint-fpc1022.dtsi"
-
-&soc {
-	fpc,btp {
-		status = "ok";
-		use_regulator = <0>;
-		fpc,ldo_en = <&pm8994_gpios 6 0x0>;
+&spi_8 {
+	fpc1020@1 {
+		vdd_io-supply	= <&pm8994_l12>;
+		fpc,enable-wakeup;
 	};
 };
+
