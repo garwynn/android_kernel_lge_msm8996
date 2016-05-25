@@ -22,18 +22,14 @@ config NFC_NQ
 	  This is for i2c connected version. NCI protocol logic
 	  resides in the usermode and it has no other NFC dependencies.
 
-config NFC_NXP_PN5XX
-	tristate "NXP PN5XX based driver"
-	depends on I2C
-	select CRC_CCITT
-	default n
-	---help---
-	  NXP PN5XX driver based on I2C.
-	  This is a driver to provides I2C access to PN5xx NFC Controller devices
+config NFC_PN548
+	tristate "PN548 NFC driver"
+	help
+	  NXP PN548 driver.
+	  This driver provides support for NFC NXP PN548 devices.
 
-	  To compile this driver as a module, choose m here. The module will
-	  be called pn5xx_i2c.
-	  Say N if unsure.
+	  Say Y here to compile support for PN548 devices into the
+	  kernel or say M to compile it as module (pn548).
 
 config CXD224X_NFC
     tristate "CXD224X NFC driver"
