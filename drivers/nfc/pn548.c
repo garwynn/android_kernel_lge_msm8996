@@ -32,8 +32,6 @@
 
 static bool sIsWakeLocked = false;
 
-static bool sIrqState = false;
-
 static bool sPowerState = NFC_POWER_OFF;
 
 static struct i2c_client *pn548_client;
@@ -211,7 +209,6 @@ static int pn548_dev_open(struct inode *inode, struct file *filp)
 	struct pn548_dev *pn548_dev = i2c_get_clientdata(pn548_client);
 
 	filp->private_data = pn548_dev;
-	pn548_enable_irq(pn548_dev);
 	pr_debug("%s : %d,%d\n", __func__, imajor(inode), iminor(inode));
 
 	return 0;
@@ -247,13 +244,6 @@ static long pn548_dev_unlocked_ioctl(struct file *filp,
 
 				pn548_enable_irq(pn548_dev);
 				spin_lock_irqsave(&pn548_dev->irq_enabled_lock, flags);
-				if (sIrqState == false) {
-					irq_set_irq_wake(pn548_dev->client->irq,1);
-					sIrqState = true;
-					pr_info(PN548_DRV_NAME ":%s enable IRQ\n", __func__);
-				} else {
-					pr_err("%s IRQ is already enabled!\n", __func__);
-				}
 				sPowerState = NFC_POWER_ON;
 				spin_unlock_irqrestore(&pn548_dev->irq_enabled_lock, flags);
 			} else {
@@ -269,13 +259,7 @@ static long pn548_dev_unlocked_ioctl(struct file *filp,
 
 				pn548_disable_irq(pn548_dev);
 				spin_lock_irqsave(&pn548_dev->irq_enabled_lock, flags);
-				if (sIrqState == true) {
-					irq_set_irq_wake(pn548_dev->client->irq,0);
-					sIrqState = false;
-					dprintk(PN548_DRV_NAME ":%s disable IRQ\n", __func__);
-				} else {
-					pr_err("%s IRQ is already disabled!\n", __func__);
-				}
+
 				if (sIsWakeLocked == true) {
 					pr_err("%s: Release Wake_Lock\n", __func__);
 					wake_unlock(&nfc_wake_lock);
@@ -390,7 +374,7 @@ static int pn548_probe(struct i2c_client *client,
 	* so if irq enable in pn548_enable_irq called,
 	* unbalanced enable log will be appeared.
 	*/
-	//pn548_dev->irq_enabled = true;
+	pn548_dev->irq_enabled = true;
 	enable_irq_wake(pn548_get_irq_pin(pn548_dev));
 	pn548_disable_irq(pn548_dev);
 	i2c_set_clientdata(client, pn548_dev);
